@@ -17,5 +17,5 @@ From PyPi::
 Philosophy
 ----------
 
-1. Unprioritized bugs should be prioritized.
-2. New bugs should be triaged.
+1. New bugs should be triaged.
+2. Unprioritized bugs should be prioritized.

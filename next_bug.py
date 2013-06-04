@@ -88,8 +88,8 @@ def main(args):
     for project_name in args.projects:
         project = lp.projects[project_name]
         for query in [
-                find_unprioritized_bugs,
-                find_new_bugs]:
+                find_new_bugs,
+                find_unprioritized_bugs]:
             bugs = sort_bugs_by_date_created(query(project))
             if bugs:
                 render_bugs(bugs, maximum=1)
