@@ -14,10 +14,31 @@ import argparse
 import os
 import sys
 
+from launchpadlib import launchpad
 import pkg_resources
 
 
 __version__ = pkg_resources.require('next-bug')[0].version
+
+LAUNCHPAD_CACHE_DIR = os.path.expanduser('~/.launchpadlib/cache/')
+
+
+def render_bugs(bugs, maximum=None):
+    class Colorize(object):
+        NORMAL = '\033[0m'
+        LINK = '\x1b[34m'
+
+        @property
+        def enabled(cls):
+            return os.environ.get('CLICOLOR')
+
+        def link(cls, s):
+            return cls.LINK + s + cls.NORMAL if cls.enabled else s
+
+    colorize = Colorize()
+
+    for bug in bugs[:maximum]:
+        print colorize.link(bug.web_link), bug.title.strip()
 
 
 def which(program):
@@ -33,14 +54,40 @@ def open_url(url):
     os.system('%s %s' % (open_app, url))
 
 
+def find_new_bugs(project):
+    return project.searchTasks(status='New')
+
+
+def find_unprioritized_bugs(project):
+    return project.searchTasks(importance='Undecided')
+
+
+def sort_bugs_by_date_created(bugs):
+    return sorted(bugs, key=lambda bug: bug.date_created)
+
+
 def main(args):
-    sys.exit()
+    lp = launchpad.Launchpad.login_anonymously(
+        'next-bug', 'production', LAUNCHPAD_CACHE_DIR)
+    for project_name in args.projects:
+        project = lp.projects[project_name]
+        for query in [
+                find_unprioritized_bugs,
+                find_new_bugs]:
+            bugs = sort_bugs_by_date_created(query(project))
+            if bugs:
+                render_bugs(bugs, maximum=1)
+                open_url(bugs[0].web_link)
+                sys.exit(len(bugs))
 
 
 def cli():
     parser = argparse.ArgumentParser(
         prog='next-bug',
         description='Manage Launchpad bugs without any hassle.')
+    parser.add_argument(
+        'projects', metavar='project', nargs='+',
+        help='Projects to include when prioritizing bugs.')
     parser.add_argument(
         '--version', action='store_true',
         help='Show version number and exit')
