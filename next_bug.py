@@ -66,9 +66,25 @@ def sort_bugs_by_date_created(bugs):
     return sorted(bugs, key=lambda bug: bug.date_created)
 
 
+def get_launchpad_client():
+    class NoCredentialProvided(Exception):
+        pass
+
+    def no_credentials():
+        raise NoCredentialProvided()
+
+    try:
+        return launchpad.Launchpad.login_with(
+            'next-bug', 'production', LAUNCHPAD_CACHE_DIR,
+            credential_save_failed=no_credentials)
+    except NoCredentialProvided:
+        return launchpad.Launchpad.login_anonymously(
+            'next-bug', 'production', LAUNCHPAD_CACHE_DIR)
+
+
 def main(args):
-    lp = launchpad.Launchpad.login_anonymously(
-        'next-bug', 'production', LAUNCHPAD_CACHE_DIR)
+    lp = get_launchpad_client()
+
     for project_name in args.projects:
         project = lp.projects[project_name]
         for query in [
