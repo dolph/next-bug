@@ -2,16 +2,16 @@ import setuptools
 
 
 setuptools.setup(
-    name='next-review',
-    version='1.2.0',
-    description='Start your next gerrit code review without any hassle.',
+    name='next-bug',
+    version='1.0.0',
+    description='Manage Launchpad bugs without any hassle.',
     author='Dolph Mathews',
     author_email='dolph.mathews@gmail.com',
-    url='http://github.com/dolph/next-review',
-    scripts=['next_review.py'],
-    install_requires=['paramiko'],
-    py_modules=['next_review'],
-    entry_points={'console_scripts': ['next-review = next_review:cli']},
+    url='http://github.com/dolph/next-bug',
+    scripts=['next_bug.py'],
+    install_requires=['launchpadlib'],
+    py_modules=['next_bug'],
+    entry_points={'console_scripts': ['next-bug = next_bug:cli']},
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',
