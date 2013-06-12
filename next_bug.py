@@ -59,7 +59,10 @@ def find_new_bugs(project):
 
 
 def find_unprioritized_bugs(project):
-    return project.searchTasks(importance='Undecided')
+    bugs = project.searchTasks(importance='Undecided')
+
+    # incomplete bugs can't necessarily be prioritized
+    return [x for x in bugs if x.status != 'Incomplete']
 
 
 def sort_bugs_by_date_created(bugs):
