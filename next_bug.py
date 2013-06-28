@@ -13,6 +13,7 @@
 import argparse
 import os
 import sys
+import webbrowser
 
 from launchpadlib import launchpad
 import pkg_resources
@@ -39,19 +40,6 @@ def render_bugs(bugs, maximum=None):
 
     for bug in bugs[:maximum]:
         print colorize.link(bug.web_link), bug.title.strip()
-
-
-def which(program):
-    """Locates a program file in the user's path."""
-    for path in os.environ['PATH'].split(":"):
-        if os.path.exists(path + '/' + program):
-            return path + '/' + program
-
-
-def open_url(url):
-    """Opens a URL using whatever program is available on the system."""
-    open_app = which('xdg-open') or 'open'
-    os.system('%s %s' % (open_app, url))
 
 
 def find_new_bugs(project):
@@ -96,7 +84,7 @@ def main(args):
             bugs = sort_bugs_by_date_created(query(project))
             if bugs:
                 render_bugs(bugs, maximum=1)
-                open_url(bugs[0].web_link)
+                webbrowser.open(bugs[0].web_link)
                 sys.exit(len(bugs))
 
 
